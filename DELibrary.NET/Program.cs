@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 using System.IO;
-using System.Security.AccessControl;
-using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace DragonEngineLibrary
 {
@@ -114,27 +110,27 @@ namespace DragonEngineLibrary
                 }
                 */
 
-                foreach (string directory in Directory.GetDirectories(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "mods")))
+                string baseGameDirectoryAbsolute = Path.GetDirectoryName(Environment.ProcessPath);
+                foreach (string modDirectoryRelative in Directory.GetDirectories(Path.Combine(baseGameDirectoryAbsolute, "mods")))
                 {
-                    string dirName = new DirectoryInfo(directory).Name;
+                    string dirName = new DirectoryInfo(modDirectoryRelative).Name;
 
                     if (!m_modsList.Contains(dirName))
                         continue;
 
-                    string configFile = Path.Combine(directory, "de_mod.ini");
+                    string configFile = Path.Combine(modDirectoryRelative, "de_mod.ini");
 
                     if (!File.Exists(configFile))
                         continue;
 
                     Ini ini = new Ini(configFile);
                     string dllFile = ini.GetValue("InitDll");
-    
-                    bool loadRes = DragonEngine.InitializeModLibrary(Path.Combine(directory, dllFile));
+                    bool loadRes = ModManager.LoadMod(Path.Combine(baseGameDirectoryAbsolute, modDirectoryRelative, dllFile));
 
                     if (loadRes)
-                        DragonEngine.Log($"Successfully loaded DLL library in {new DirectoryInfo(directory).Name}");
+                        DragonEngine.Log($"Successfully loaded DLL library in {new DirectoryInfo(modDirectoryRelative).Name}");
                     else
-                        DragonEngine.Log($"Failed to load DLL library in {new DirectoryInfo(directory).Name}", Logger.Event.ERROR);
+                        DragonEngine.Log($"Failed to load DLL library in {new DirectoryInfo(modDirectoryRelative).Name}", Logger.Event.ERROR);
                 }
             }
 
