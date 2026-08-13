@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Reflection;
@@ -156,9 +152,6 @@ namespace DragonEngineLibrary
 
         public static IntPtr BaseAddress { get { return GetModuleHandle(); } }
 
-        [DllImport("User32.dll", CharSet = CharSet.Unicode)]
-        public static extern int MessageBox(IntPtr h, string m, string c, int type);
-
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         internal static extern IntPtr LoadLibrary(string libname);
 
@@ -174,7 +167,7 @@ namespace DragonEngineLibrary
 
             Exception ex = e.ExceptionObject as Exception;
             DragonEngine.Log($"***************FATAL ERROR***************\nInner Exception:\n{ex.InnerException}\n\nMessage:\n{ex.Message}\n\nStacktrace:\n{ex.StackTrace}", Logger.Event.FATAL);
-            MessageBox((IntPtr)0, "Fatal error! More information available on de_log.txt (where game exe is located). The game will now exit", "Fatal DELibrary Error", 0x00000010);
+            Utils.Message.MessageBox((IntPtr)0, "Fatal error! More information available on de_log.txt (where game exe is located). The game will now exit", "Fatal DELibrary Error", 0x00000010);
             Environment.Exit(-1); // exit and avoid WER etc
         }
 
@@ -362,96 +355,6 @@ namespace DragonEngineLibrary
         public static Character GetHumanPlayer()
         {
             return new EntityHandle<Character>(DELib_GetHumanPlayer());
-        }
-
-        internal static bool InitializeModLibrary(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-                return false;
-
-            if (!File.Exists(path))
-            {
-                DragonEngine.Log(Directory.GetCurrentDirectory(), Logger.Event.DEBUG);
-                DragonEngine.Log($"{path} does not exist.", Logger.Event.ERROR);
-                return false;
-            }
-
-            try
-            {
-                Assembly loadedAssembly = Assembly.LoadFrom(path);
-                Type modInfoType = typeof(DEModInfo);
-
-                foreach (CustomAttributeData dat in loadedAssembly.CustomAttributes)
-                    if (dat.AttributeType.FullName == typeof(DEModInfo).FullName) // type comparing didnt work. so we compare names
-                    {
-                        ProcessDEMod(new FileInfo(path).Directory.FullName, dat.ConstructorArguments);
-                        return true;
-                    }
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                //It was a valid C# Dragon Engine .NET library but there was an error
-                if (ex as BadImageFormatException == null)
-                {
-                    if (ex as FileLoadException != null && ex.InnerException as NotSupportedException != null)
-                        MessageBox((IntPtr)0, $"Failed to load {Path.GetFileName(path)} in mods/{Path.GetDirectoryName(path)} because it was untrusted by system, please unblock!\n" +
-                            $"1)Go to the problematic file\n" +
-                            $"2)Right click on it, go to properties\n" +
-                            $"3)Press the unblock button", "Load Error", 0);
-                    else
-                    {
-                        DragonEngine.Log($"Failed to load library, Exception type: {ex.ToString()}\n\nStacktrace:\n{Environment.StackTrace}\n\nMessage:\n {ex.Message}\n\nInnerException:\n{ex.InnerException}", Logger.Event.ERROR);
-                        MessageBox(IntPtr.Zero, "Failed to load mod. Information has been logged to de_log.txt (where the exe is)", "Load Error", 0);
-                    }
-                }
-
-                return false;
-            }
-        }
-
-        internal static void ProcessDEMod(string dir, IList<CustomAttributeTypedArgument> modInfo)
-        {
-            string modName = (string)modInfo[0].Value;
-            Type modType = (Type)modInfo[1].Value;
-
-            if (modType == null)
-            {
-                DragonEngine.Log($"The mod {modName} does not have a valid mod initialization class", Logger.Event.ERROR);
-                return;
-            }
-
-
-            if (modType.BaseType.FullName == "DragonEngineLibrary.DragonEngineMod")
-            {
-               DragonEngineMod createdObj = (DragonEngineMod) Activator.CreateInstance(modType);
-
-                if (createdObj != null)
-                {
-                    createdObj.ModPath = dir;
-                    createdObj.OnModInit();
-                }
-                else
-                    DragonEngine.Log("Mod class initialization failed!", Logger.Event.ERROR);
-            }
-            else
-                DragonEngine.Log($"{modName}'s initialization class does not derive from DragonEngineMod!", Logger.Event.ERROR);
-
-        }
-    }
-
-
-    public class DragonEngineMod
-    {
-        public virtual string ModPath
-        {
-            get; internal set;
-        }
-
-        public virtual void OnModInit()
-        {
-
         }
     }
 }
