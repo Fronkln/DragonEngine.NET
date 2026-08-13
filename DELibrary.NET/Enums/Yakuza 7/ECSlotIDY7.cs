@@ -98,7 +98,7 @@ namespace DragonEngineLibrary
         character_visible_ratio,         // constant 0x59
         player_state,        // constant 0x5A
         collision_collect_hact,      // constant 0x5B
-        haact,       // constant 0x5C
+        hact,       // constant 0x5C
         instant_chat,        // constant 0x5D
         speed_meter,         // constant 0x5E
         map_icon,        // constant 0x5F

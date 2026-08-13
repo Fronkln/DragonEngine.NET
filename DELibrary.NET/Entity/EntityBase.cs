@@ -54,9 +54,6 @@ namespace DragonEngineLibrary
         [DllImport("Y7Internal.dll", EntryPoint = "LIB_ENTITY_RELEASE_ENTITY", CallingConvention = CallingConvention.Cdecl)]
         internal static extern void DELibrary_EntityBase_ReleaseEntity(IntPtr entity, uint level = 0, bool no_sweeper = false);
 
-        [DllImport("Y7Internal.dll", EntryPoint = "LIB_ENTITY_TEST2", CallingConvention = CallingConvention.Cdecl)]
-        public static extern uint DELibrary_EntityBase_Test2(ulong uid);
-
         [DllImport("Y7Internal.dll", EntryPoint = "LIB_ENTITY_GETTER_ENTITY_UID", CallingConvention = CallingConvention.Cdecl)]
         internal static extern EntityUID DELibrary_EntityBase_Getter_EntityUID(IntPtr entity);
 

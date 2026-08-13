@@ -94,20 +94,20 @@ void DotNetHost::Shutdown()
     m_initialized = false;
 }
 
-bool DotNetHost::Initialize(const std::wstring& runtimeConfigPath)
+int DotNetHost::Initialize(const std::wstring& runtimeConfigPath)
 {
     if (m_initialized)
-        return true;
+        return 1;
 
     if (!LoadHostFxr())
-        return false;
+        return -1;
 
     if (!LoadAssemblyDelegate(runtimeConfigPath))
-        return false;
+        return 0;
 
     m_initialized = true;
 
-    return true;
+    return 1;
 }
 
 bool DotNetHost::LoadAssemblyDelegate(const std::wstring& runtimeConfigPath)

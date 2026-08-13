@@ -86,9 +86,20 @@ namespace
             ExitThread(1);
         }
 
-        if (!g_Host.Initialize(runtimeConfigPath))
+        int code = g_Host.Initialize(runtimeConfigPath);
+
+        if (code != 1)
         {
-            Log(L"[DELibInitializer] Failed to initialize CoreCLR via hostfxr\n");
+            switch (code)
+            {
+            case -1:
+                Log(L"[DELibInitializer] Failed to load HostFXR\n");
+                break;
+            case 0:
+                Log(L"[DELibInitializer] Failed to load Assembly delegate\n");
+                break;
+            }
+
             ExitThread(1);
         }
 

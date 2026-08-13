@@ -38,7 +38,7 @@ namespace DragonEngineLibrary
 
         [DllImport("Y7Internal.dll", EntryPoint = "LIB_HACTMANAGER_FINDRANGE", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool DELib_HActManager_FindRange(Vector4 pos, HActRangeType type, ref HActRangeInfo outInf);
+        internal static extern bool DELib_HActManager_FindRange(ref Vector4 pos, HActRangeType type, ref HActRangeInfo outInf);
 
         [DllImport("Y7Internal.dll", EntryPoint = "LIB_HACTMANAGER_ISREQUESTORPLAYING", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.U1)]
@@ -95,7 +95,7 @@ namespace DragonEngineLibrary
 
         public static bool FindRange(Vector4 pos, HActRangeType rangeType, ref HActRangeInfo outInf)
         {
-            return DELib_HActManager_FindRange(pos, rangeType, ref outInf);
+            return DELib_HActManager_FindRange(ref pos, rangeType, ref outInf);
         }
     }
 #endif

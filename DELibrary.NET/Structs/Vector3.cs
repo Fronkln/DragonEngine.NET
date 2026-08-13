@@ -227,5 +227,26 @@ namespace DragonEngineLibrary
             float num12 = rotation.z * num3;
             return new Vector3(value.x * (1f - num10 - num12) + value.y * (num8 - num6) + value.z * (num9 + num5), value.x * (num8 + num6) + value.y * (1f - num7 - num12) + value.z * (num11 - num4), value.x * (num9 - num5) + value.y * (num11 + num4) + value.z * (1f - num7 - num10));
         }
+
+        public static Vector3 Min(Vector3 a, Vector3 b)
+        {
+            return new Vector3(Math.Min(a.x, b.x), Math.Min(a.y, b.y), Math.Min(a.z, b.z));
+        }
+
+        public static Vector3 Max(Vector3 a, Vector3 b)
+        {
+            return new Vector3 (Math.Max(a.x, b.x), Math.Max(a.y, b.y), Math.Max(a.z, b.z));
+        }
+
+        public float Length()
+        {
+            return (float)Math.Sqrt(x * x + y * y + z * z);
+        }
+
+        // Returns the squared length (much faster; avoids the square root)
+        public float LengthSquared()
+        {
+            return x * x + y * y + z * z;
+        }
     }
 }

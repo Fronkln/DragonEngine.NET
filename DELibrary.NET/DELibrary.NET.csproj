@@ -172,14 +172,4 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
 
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\DELibrary.NET.ImGuizmo\DELibrary.NET.ImGuizmo.csproj" />
-    <ProjectReference Include="..\DELibrary.NET.ImGui\DELibrary.NET.ImGui.csproj" />
-    <ProjectReference Include="..\DELibrary.NET.ImNodes\DELibrary.NET.ImNodes.csproj" />
-    <ProjectReference Include="..\DELibrary.NET.ImPlot3D\DELibrary.NET.ImPlot3D.csproj" />
-    <ProjectReference Include="..\DELibrary.NET.ImPlot\DELibrary.NET.ImPlot.csproj" />
-  </ItemGroup>
-
 </Project>

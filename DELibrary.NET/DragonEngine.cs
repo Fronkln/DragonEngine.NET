@@ -154,14 +154,6 @@ namespace DragonEngineLibrary
         [DllImport("user32.dll")]
         private static extern short GetAsyncKeyState(int vKey);
 
-        //Couldnt figure out creating a console despite calling AllocConsole
-        //I'll just print to the existing console i have through a very depressing PInvoke
-        [DllImport("Y7Internal.dll", EntryPoint = "LIB_TEMP_CPP_COUT", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void DELib_TEMP_CPP_COUT(string text);
-
-        [DllImport("Y7Internal.dll", EntryPoint = "LIB_TEST_FUNC", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int TestFunc();
-
         public static IntPtr BaseAddress { get { return GetModuleHandle(); } }
 
         [DllImport("User32.dll", CharSet = CharSet.Unicode)]

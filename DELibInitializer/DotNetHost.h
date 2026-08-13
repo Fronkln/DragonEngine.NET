@@ -22,7 +22,7 @@ public:
     ~DotNetHost();
 
     // Starts CoreCLR using the specified runtimeconfig.json.
-    bool Initialize(const std::wstring& runtimeConfigPath);
+    int Initialize(const std::wstring& runtimeConfigPath);
 
     // Returns whether the runtime has been initialized.
     bool IsInitialized() const;

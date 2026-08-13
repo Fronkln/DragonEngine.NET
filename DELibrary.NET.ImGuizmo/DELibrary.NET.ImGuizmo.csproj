@@ -16,6 +16,8 @@
 		<RepositoryType>git</RepositoryType>
 
 		<NoWarn>$(NoWarn);1591</NoWarn>
+
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>
