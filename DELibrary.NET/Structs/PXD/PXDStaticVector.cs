@@ -29,6 +29,13 @@ namespace DragonEngineLibrary
             return arr[idx];
         }
 
+        public T ElementAtUnmanagedObject<T>(int idx) where T : UnmanagedObject, new()
+        {
+            IntPtr* arr = (IntPtr*)MPElement;
+            return new T() { Pointer = arr[idx] };
+        }
+
+
         public uint[] GetArrayU32()
         {
             uint[] array = new uint[ElementSize];

@@ -17,8 +17,14 @@ namespace DragonEngineLibrary
         [DllImport("Y7Internal.dll", EntryPoint = "LIB_CPARTICLE_MANAGER_UNLOAD_RAW", CallingConvention = CallingConvention.Cdecl)]
         internal extern static void DELib_ParticleManager_UnloadRaw(ParticleID particleID);
 
+
+        [DllImport("Y7Internal.dll", EntryPoint = "LIB_CPARTICLE_MANAGER_GET_CMN_ARCHIVE", CallingConvention = CallingConvention.Cdecl)]
+        public extern static EntityHandle<ParticleResource> GetCmnArchive();
+
+        [DllImport("Y7Internal.dll", EntryPoint = "LIB_CPARTICLE_MANAGER_GET_RAW_ARCHIVE", CallingConvention = CallingConvention.Cdecl)]
+        public extern static EntityHandle<ParticleResource> GetRawArchive();
+
         ///<summary>Play a particle.</summary>
-        [DECompatibility(DEGames.YLAD)]
         public static EntityHandle<ParticleInterface> Play(ParticleID particleID, Matrix4x4 matrix, ParticleType type)
         {
             IntPtr matrixMem = matrix.ToIntPtr();
@@ -28,7 +34,6 @@ namespace DragonEngineLibrary
         }
 
         ///<summary>Is the particle loaded?</summary>
-        [DECompatibility(DEGames.YLAD)]
         public static bool IsLoadedRaw(ParticleID particleID)
         {
             return DELib_ParticleManager_IsLoadedRaw(particleID);
