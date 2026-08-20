@@ -57,6 +57,9 @@ namespace DragonEngineLibrary
         [DllImport("Y7Internal.dll", EntryPoint = "LIB_UI_HANDLE_CBASE_PLAY_ANIMATION_SET", CallingConvention = CallingConvention.Cdecl)]
         internal static extern void DELib_UIHandleBase_PlayAnimationSet(ulong handle, uint id);
 
+        [DllImport("Y7Internal.dll", EntryPoint = "LIB_UI_HANDLE_CBASE_PLAY_ANIMATION", CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void DELib_UIHandleBase_PlayAnimation(ulong handle, uint id);
+
         [DllImport("Y7Internal.dll", EntryPoint = "LIB_UI_HANDLE_CBASE_SET_VISIBLE", CallingConvention = CallingConvention.Cdecl)]
         internal static extern void DELib_UIHandleBase_SetVisible(ulong handle, bool visible);
 
@@ -92,6 +95,11 @@ namespace DragonEngineLibrary
         public UIHandleBase(ulong handle)
         {
             Handle = handle;
+        }
+
+        public bool IsValid()
+        {
+            return Handle != 0 && DELib_UIHandleBase_GetControlBase(Handle) != IntPtr.Zero;
         }
 
         public override string ToString()
@@ -234,6 +242,11 @@ namespace DragonEngineLibrary
         public void PlayAnimationSet(uint id)
         {
             DELib_UIHandleBase_PlayAnimationSet(Handle, id);
+        }
+
+        public void PlayAnimation(uint id)
+        {
+            DELib_UIHandleBase_PlayAnimation(Handle, id);
         }
 
         public void TransitionAnimationSetTo(uint scene_id, uint animation_set_data_id, uint focus_operation_id)
