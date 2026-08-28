@@ -155,6 +155,9 @@ namespace DragonEngineLibrary
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         internal static extern IntPtr LoadLibrary(string libname);
 
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern int MessageBox(IntPtr handle, string text, string title, int type);
+
         /// <summary>
         /// Initialize Dragon Engine library. Important for it to properly function.
         /// </summary>
@@ -167,9 +170,11 @@ namespace DragonEngineLibrary
 
             Exception ex = e.ExceptionObject as Exception;
             DragonEngine.Log($"***************FATAL ERROR***************\nInner Exception:\n{ex.InnerException}\n\nMessage:\n{ex.Message}\n\nStacktrace:\n{ex.StackTrace}", Logger.Event.FATAL);
-            Utils.Message.MessageBox((IntPtr)0, "Fatal error! More information available on de_log.txt (where game exe is located). The game will now exit", "Fatal DELibrary Error", 0x00000010);
+            MessageBox((IntPtr)0, "Fatal error! More information available on de_log.txt (where game exe is located). The game will now exit", "Fatal DELibrary Error", 0x00000010);
             Environment.Exit(-1); // exit and avoid WER etc
         }
+
+
 
         public static void Initialize()
         {

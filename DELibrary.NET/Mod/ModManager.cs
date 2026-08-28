@@ -59,14 +59,14 @@ namespace DragonEngineLibrary
                 if (ex as BadImageFormatException == null)
                 {
                     if (ex as FileLoadException != null && ex.InnerException as NotSupportedException != null)
-                        Utils.Message.MessageBox((IntPtr)0, $"Failed to load {Path.GetFileName(path)} in mods/{Path.GetDirectoryName(path)} because it was untrusted by system, please unblock!\n" +
+                        DragonEngine.MessageBox((IntPtr)0, $"Failed to load {Path.GetFileName(path)} in mods/{Path.GetDirectoryName(path)} because it was untrusted by system, please unblock!\n" +
                             $"1)Go to the problematic file\n" +
                             $"2)Right click on it, go to properties\n" +
                             $"3)Press the unblock button", "Load Error", 0);
                     else
                     {
                         DragonEngine.Log($"Failed to load library, Exception type: {ex.ToString()}\n\nStacktrace:\n{Environment.StackTrace}\n\nMessage:\n {ex.Message}\n\nInnerException:\n{ex.InnerException}", Logger.Event.ERROR);
-                        Utils.Message.MessageBox(IntPtr.Zero, "Failed to load mod. Information has been logged to de_log.txt (where the exe is)", "Load Error", 0);
+                        DragonEngine.MessageBox(IntPtr.Zero, "Failed to load mod. Information has been logged to de_log.txt (where the exe is)", "Load Error", 0);
                     }
                 }
                 modAssemblyLoadContext.Unload();
