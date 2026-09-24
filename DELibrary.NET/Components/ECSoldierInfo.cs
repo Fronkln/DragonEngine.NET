@@ -76,7 +76,7 @@ namespace DragonEngineLibrary
         {
             get
             {
-                return Marshal.PtrToStringAnsi(DELib_ECSoldierInfo_Getter_Name(Pointer));
+                return Marshal.PtrToStringUTF8(DELib_ECSoldierInfo_Getter_Name(Pointer));
             }
         }
     }

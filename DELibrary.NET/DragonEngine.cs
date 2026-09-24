@@ -174,6 +174,16 @@ namespace DragonEngineLibrary
             Environment.Exit(-1); // exit and avoid WER etc
         }
 
+        public static string SystemLanguageDir
+        {
+            get
+            {
+                unsafe
+                {
+                    return Marshal.PtrToStringAnsi(NativeFunctions.EngineNativeFunctions.GetCurrentSystemLanguageDir());
+                }
+            }
+        }
 
 
         public static void Initialize()

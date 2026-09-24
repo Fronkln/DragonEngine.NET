@@ -18,7 +18,6 @@ namespace DragonEngineLibrary
         public static string BaseDirectory;
         public static string Root;
 
-        //Do whatever you want here
         static void ThreadTest()
         {
             try
@@ -31,7 +30,10 @@ namespace DragonEngineLibrary
                 while (!DragonEngine.IsEngineInitialized())
                 {
                     DragonEngine.RefreshOffsets();
+                    Thread.Sleep(50);
                 }
+
+                NativeFunction.Init();
 
                 DragonEngine.Log("Dragon Engine initialized, initializing the library.");
                 StartEngine();
