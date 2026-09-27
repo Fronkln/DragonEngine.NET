@@ -9,95 +9,10 @@ using System.Security;
 
 namespace DragonEngineLibrary
 {
-    namespace Unsafe
-    {
-        public static class CPP
-        {
-            [DllImport("Y7Internal.dll", EntryPoint = "LIB_UNSAFE_ALLOC_BUFFER", CallingConvention = CallingConvention.Cdecl)]
-            public static extern IntPtr AllocBuffer(IntPtr origin);
-
-            /// <summary>
-            /// Very dangerous to use, doesnt call constructors on deletion.
-            /// </summary>
-            /// <param name="text"></param>
-            [DllImport("Y7Internal.dll", EntryPoint = "LIB_CPP_FREE_MEM", CallingConvention = CallingConvention.Cdecl)]
-            public static extern void FreeUnmanagedMemory(IntPtr memory);
-
-            [DllImport("Y7Internal.dll", EntryPoint = "LIB_UNSAFE_NOP", CallingConvention = CallingConvention.Cdecl)]
-            public static extern void NopMemory(IntPtr memory, uint len);
-
-
-            [DllImport("Y7Internal.dll", EntryPoint = "LIB_UNSAFE_PATCH", CallingConvention = CallingConvention.Cdecl)]
-            private static extern void Unsafe_NopMemory(IntPtr memory, IntPtr buf, int len);
-
-            [DllImport("Y7Internal.dll", EntryPoint = "LIB_PATTERN_SEARCH", CallingConvention = CallingConvention.Cdecl)]
-            private static extern IntPtr _PatternSearch(string pattern);
-
-            public static IntPtr PatternSearch(string pattern)
-            {
-                IntPtr patternAddr = _PatternSearch(pattern);
-
-                return patternAddr;
-            }
-
-            [DllImport("Y7Internal.dll", EntryPoint = "LIB_READ_RELATIVE_ADDRESS", CallingConvention = CallingConvention.Cdecl)]
-            public static extern IntPtr ResolveRelativeAddress(IntPtr addr, int instructionLen);
-
-            [DllImport("Y7Internal.dll", EntryPoint = "LIB_WRITE_RELATIVE_ADDRESS", CallingConvention = CallingConvention.Cdecl)]
-            public static extern void WriteRelativeAddress(IntPtr addr, IntPtr target, int instructionLen);
-
-            [DllImport("Y7Internal.dll", EntryPoint = "LIB_READ_CALL", CallingConvention = CallingConvention.Cdecl)]
-            public static extern IntPtr ReadCall(IntPtr addr);
-
-            [DllImport("Y7Internal.dll", EntryPoint = "LIB_WRITE_CALL", CallingConvention = CallingConvention.Cdecl)]
-            public static extern void WriteCall(IntPtr addr, IntPtr func);
-
-            [DllImport("Y7Internal.dll", EntryPoint = "LIB_INJECT_HOOK", CallingConvention = CallingConvention.Cdecl)]
-            public static extern void InjectHook(IntPtr addr, IntPtr func);
-
-            [DllImport("Y7Internal.dll", EntryPoint = "LIB_TEST_FUNC", CallingConvention = CallingConvention.Cdecl)]
-            public static extern int TestFunc();
-
-            public static void PatchMemory(IntPtr addr, params byte[] bytes)
-            {
-                IntPtr byteArr = Marshal.AllocHGlobal(bytes.Length);
-                Marshal.Copy(bytes, 0, byteArr, bytes.Length);
-
-                Unsafe_NopMemory(addr, byteArr, bytes.Length);
-
-                Marshal.FreeHGlobal(byteArr);
-            }
-        }
-    }
-
     public static class DragonEngine
     {
-        internal delegate void RegisterJobDelegate();
-        internal delegate void RegisterWndProcDelegate(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam);
-
-        internal class JobRegisterInfo
-        {
-            public Action funcRaw;
-            public RegisterJobDelegate del;
-            public IntPtr delPointer;
-            public DEJob phase;
-            public bool after;
-
-            public JobRegisterInfo(Action func, RegisterJobDelegate del, IntPtr ptr, DEJob phase, bool after)
-            {
-                this.funcRaw = func;
-                this.del = del;
-                this.phase = phase;
-                delPointer = ptr;
-                this.after = after;
-            }
-        }
-        internal static List<JobRegisterInfo> _jobDelegates = new List<JobRegisterInfo>();
-        internal static List<RegisterWndProcDelegate> _wndprocDelegates = new List<RegisterWndProcDelegate>();
-
-
-        [DllImport("Y7Internal.dll", EntryPoint = "LIB_GET_MODULE_ADDRESS", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetModuleHandle();
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern IntPtr GetModuleHandle(string lpModuleName);
 
         [DllImport("Y7Internal.dll", EntryPoint = "LIB_INIT", CallingConvention = CallingConvention.Cdecl)]
         private static extern uint DELib_Init();
@@ -150,8 +65,6 @@ namespace DragonEngineLibrary
         [DllImport("user32.dll")]
         private static extern short GetAsyncKeyState(int vKey);
 
-        public static IntPtr BaseAddress { get { return GetModuleHandle(); } }
-
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         internal static extern IntPtr LoadLibrary(string libname);
 
@@ -185,6 +98,8 @@ namespace DragonEngineLibrary
             }
         }
 
+
+        public static bool IsGOG { get; private set; }
 
         public static void Initialize()
         {
@@ -230,6 +145,8 @@ namespace DragonEngineLibrary
             BattleTurnManager.OverrideAttackerSelectionInfo.delegPtr = Marshal.GetFunctionPointerForDelegate(BattleTurnManager.OverrideAttackerSelectionInfo.deleg);
             DELib_RegisterAttackerOverrideFunc(BattleTurnManager.OverrideAttackerSelectionInfo.delegPtr);
 #endif
+
+            IsGOG = GetModuleHandle("galaxy64") != IntPtr.Zero;
 
             EngineHooks.Initialize();
         }
@@ -298,7 +215,7 @@ namespace DragonEngineLibrary
         {
             RegisterJobDelegate del = new RegisterJobDelegate(action);
             JobRegisterInfo inf = new JobRegisterInfo(action, del, Marshal.GetFunctionPointerForDelegate(del), jobID, after);
-            _jobDelegates.Add(inf);
+            JobManager._jobDelegates.Add(inf);
 
             DELib_RegisterJob(inf.delPointer, jobID, after);
         }
@@ -308,7 +225,7 @@ namespace DragonEngineLibrary
             RegisterWndProcDelegate del = new RegisterWndProcDelegate(func);
             DELib_RegisterWndProc(Marshal.GetFunctionPointerForDelegate(del));
 
-            _wndprocDelegates.Add(del);
+            JobManager._wndprocDelegates.Add(del);
         }
 
 
@@ -323,7 +240,7 @@ namespace DragonEngineLibrary
         public static void UnregisterJob(Action func, DEJob phase)
         {
 
-            foreach (JobRegisterInfo job in _jobDelegates.ToArray())
+            foreach (JobRegisterInfo job in JobManager._jobDelegates.ToArray())
                 if (job.phase == phase)
                     if (job.funcRaw == func)
                     {
